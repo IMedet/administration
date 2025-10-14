@@ -25,4 +25,19 @@ public class UsersController {
     public ResponseEntity<?> getUserById(@PathVariable Long id){
         return ResponseEntity.ok(userService.getUserById(id));
     }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUserByIdNew(@PathVariable Long id){
+        return ResponseEntity.ok(userService.getUserByIdNew(id));
+    }
+
+    @GetMapping("/user/iin/{iin}")
+    public ResponseEntity<?> getUserByIinNew(@PathVariable String iin){
+        return ResponseEntity.ok(userService.getUserByIinNew(iin));
+    }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username){
+        return ResponseEntity.ok(userService.getUserByUsername(username));
+    }
 }
