@@ -15,4 +15,8 @@ public interface IUserService {
     UserDto getUserByIinNew(String iin);
 
     UserDto getUserByUsername(String username);
+
+    List<User> getUsersByRole(String role);
+
+    void delete(String username);
 }

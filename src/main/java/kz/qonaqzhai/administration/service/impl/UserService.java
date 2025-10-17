@@ -1,20 +1,18 @@
 package kz.qonaqzhai.administration.service.impl;
 
-import java.lang.StackWalker.Option;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import kz.qonaqzhai.administration.entity.Role;
 import kz.qonaqzhai.administration.entity.User;
 import kz.qonaqzhai.administration.mapper.UserMapper;
 import kz.qonaqzhai.administration.repository.UserRepository;
 import kz.qonaqzhai.administration.service.IUserService;
 import kz.qonaqzhai.shared.dto.UserDto;
+import kz.qonaqzhai.shared.dto.enums.ERole;
 import kz.qonaqzhai.shared.exceptions.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -71,5 +69,18 @@ public class UserService implements IUserService {
                 .fio(user.getFio())
                 .build();
     }
+
+    @Override
+    public List<User> getUsersByRole(String roleStr) {
+        ERole role = ERole.valueOf(roleStr); 
+        return userRepository.findUsersByRole(role);
+    }
+
+    @Override
+    public void delete(String username) {
+        userRepository.deleteByUsername(username);
+    }
+
+    
 
 }
