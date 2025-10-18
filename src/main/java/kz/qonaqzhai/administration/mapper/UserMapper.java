@@ -14,7 +14,7 @@ import kz.qonaqzhai.administration.entity.User;
 import kz.qonaqzhai.shared.dto.UserDto;
 import kz.qonaqzhai.shared.dto.enums.ERole;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
@@ -23,6 +23,9 @@ public interface UserMapper {
 
     @Named("mapRoles")
     default List<ERole> mapRoles(Set<Role> roles) {
+        if (roles == null) {
+            return null;
+        }
         return roles.stream()
                 .map(Role::getRoleName)
                 .collect(Collectors.toList());

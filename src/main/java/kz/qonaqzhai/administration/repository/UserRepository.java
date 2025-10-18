@@ -17,9 +17,13 @@ import jakarta.transaction.Transactional;
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     List<User> findAll();
     Optional<User> findByIin(String iin);
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
     List<User> findUsersByRole(ERole role);
 
     @Transactional
     void deleteByUsername(String username);
+
+    User findByPhoneNumber(String phoneNumber);
+
+    boolean existsUserByUsername(String username);
 }

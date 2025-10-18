@@ -32,5 +32,4 @@ public class Role {
         role.setRoleName(ERole.valueOf(value));
         return role;
     }
-
 }

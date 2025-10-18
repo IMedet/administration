@@ -3,30 +3,63 @@ package kz.qonaqzhai.administration.service.impl;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import kz.qonaqzhai.administration.entity.Role;
 import kz.qonaqzhai.administration.entity.User;
 import kz.qonaqzhai.administration.mapper.UserMapper;
+import kz.qonaqzhai.administration.repository.RoleRepository;
 import kz.qonaqzhai.administration.repository.UserRepository;
 import kz.qonaqzhai.administration.service.IUserService;
 import kz.qonaqzhai.shared.dto.UserDto;
+import kz.qonaqzhai.shared.dto.UserResponseDTO;
 import kz.qonaqzhai.shared.dto.enums.ERole;
 import kz.qonaqzhai.shared.exceptions.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserService implements IUserService {
-
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> getAllUsers() {
-
         return userRepository.findAll();
+    }
+
+    @Override
+    public UserResponseDTO createUser(User user) {
+        try {
+            if (!userRepository.existsUserByUsername(user.getUsername())) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+                user = userRepository.save(user);
+                return UserResponseDTO.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .iin(user.getIin())
+                        .role(user.getRole())
+                        .roles(Optional.ofNullable(user.getRoles())
+                                .map(set -> set.stream()
+                                        .map(Role::getRoleName)
+                                        .toList()
+                                ).orElse(Collections.emptyList())
+                        )
+                        .phoneNumber(user.getPhoneNumber())
+                        .fio(user.getFio())
+                        .build();
+            } else {
+                throw new CustomException("User already exists", HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
     @Override
@@ -46,13 +79,36 @@ public class UserService implements IUserService {
     @Override
     public UserDto getUserByIinNew(String iin) {
         User user = userRepository.findByIin(iin).orElseThrow();
-        UserDto userDto = UserMapper.INSTANCE.toUserTransmissionDto(user);
-        return userDto;
+        return UserMapper.INSTANCE.toUserTransmissionDto(user);
     }
 
     @Override
     public UserDto getUserByUsername(String username) {
-        return toDto(userRepository.findByUsername(username));
+        return userRepository.findByUsername(username)
+                .map(UserService::toDto)
+                .orElseThrow(() -> new CustomException("User not found with userName: " + username, HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public List<Role> getRoles() {
+        return roleRepository.findAll();
+    }
+
+    @Override
+    public UserDto getUserByPhoneNumber(String phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        return UserMapper.INSTANCE.toUserTransmissionDto(user);
+    }
+
+    @Override
+    public List<User> getUsersByRole(String roleStr) {
+        ERole role = ERole.valueOf(roleStr);
+        return userRepository.findUsersByRole(role);
+    }
+
+    @Override
+    public void delete(String username) {
+        userRepository.deleteByUsername(username);
     }
 
     private static UserDto toDto(User user) {
@@ -64,23 +120,9 @@ public class UserService implements IUserService {
                 .roles(Optional.ofNullable(user.getRoles())
                         .map(set -> set.stream()
                                 .map(Role::getRoleName).toList())
-                                .orElse(Collections.emptyList()))
+                        .orElse(Collections.emptyList()))
                 .phoneNumber(user.getPhoneNumber())
                 .fio(user.getFio())
                 .build();
     }
-
-    @Override
-    public List<User> getUsersByRole(String roleStr) {
-        ERole role = ERole.valueOf(roleStr); 
-        return userRepository.findUsersByRole(role);
-    }
-
-    @Override
-    public void delete(String username) {
-        userRepository.deleteByUsername(username);
-    }
-
-    
-
 }
