@@ -1,6 +1,7 @@
 package kz.qonaqzhai.administration.controller;
 
 import jakarta.validation.Valid;
+import kz.qonaqzhai.shared.dto.UserCreateRequest;
 import kz.qonaqzhai.shared.dto.UserResponseDTO;
 import kz.qonaqzhai.shared.exceptions.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -63,9 +64,9 @@ public class UsersController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateRequest request) {
         try {
-            UserResponseDTO userResponseDTO = userService.createUser(user);
+            UserResponseDTO userResponseDTO = userService.createUser(request);
             return ResponseEntity.ok(userResponseDTO);
         } catch (CustomException ex) {
             return ResponseEntity.status(ex.getHttpStatus()).body(ex.getMessage());

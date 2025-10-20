@@ -2,6 +2,7 @@ package kz.qonaqzhai.administration.service;
 
 import kz.qonaqzhai.administration.entity.Role;
 import kz.qonaqzhai.administration.entity.User;
+import kz.qonaqzhai.shared.dto.UserCreateRequest;
 import kz.qonaqzhai.shared.dto.UserDto;
 import kz.qonaqzhai.shared.dto.UserResponseDTO;
 
@@ -26,5 +27,6 @@ public interface IUserService {
 
     List<Role> getRoles();
 
-    UserResponseDTO createUser(User user);
+    UserResponseDTO createUser(UserCreateRequest request);
+
 }
