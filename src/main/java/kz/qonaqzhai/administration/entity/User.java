@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
