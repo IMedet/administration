@@ -53,7 +53,7 @@ public class UsersController {
         return ResponseEntity.ok(this.userService.getUsersByRole(role));
     }
 
-    @GetMapping("/user/{phoneNumber}")
+    @GetMapping("/user/phone/{phoneNumber}")
     public ResponseEntity<?> getUserByPhoneNumber(@PathVariable String phoneNumber) {
         return ResponseEntity.ok(this.userService.getUserByPhoneNumber(phoneNumber));
     }
